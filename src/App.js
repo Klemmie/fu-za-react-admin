@@ -13,11 +13,9 @@ class App extends Component {
 
         return (
             <div className="App">
-                <div className="ui text container">
                     <CompanySearch
                         content={content}
                     />
-                </div>
             </div>
         );
     }

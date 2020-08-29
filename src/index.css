@@ -21,7 +21,7 @@ code {
 
 .DataTable {
   position: relative;
-  max-width: 100vw;
+  max-width: 1870px;
 }
 
 .Cell {
@@ -48,4 +48,5 @@ code {
 .ScrollContainer {
   overflow-x: auto;
   margin-left: 145px;
+  margin-right: 145px;
 }

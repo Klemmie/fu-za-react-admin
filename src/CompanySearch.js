@@ -2,15 +2,20 @@ import React from "react";
 import CompanyOperations from "./integration/CompanyOperations";
 import UserOperations from "./integration/UserOperations";
 import './index.css'
-import Cell from "./Cell";
 import MaterialUnderlineTextbox from "./components/MaterialUnderlineTextbox";
 import styled from "styled-components";
 import {Button} from "@material-ui/core";
 import CloudUploadIcon from '@material-ui/icons/CloudUpload';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Send from '@material-ui/icons/Send';
+import SaveAlt from '@material-ui/icons/SaveAlt'
 import WatchedOperations from "./integration/WatchedOperations";
 import VideoOperations from "./integration/VideoOperations";
+import TableRow from "@material-ui/core/TableRow";
+import jsPDF from 'jspdf';
+import TableCell from "@material-ui/core/TableCell";
+import "jspdf-autotable"
+import PopUp from "./PopUp";
 
 class CompanySearch extends React.Component {
     state = {
@@ -19,7 +24,14 @@ class CompanySearch extends React.Component {
         searchValue: "",
         selectedVideo: null,
         selectedPdf: null,
-        pdfReport: []
+        pdfReport: [],
+        seen: false
+    };
+
+    togglePop = () => {
+        this.setState({
+            seen: !this.state.seen
+        });
     };
 
     onFileChangeVideo = event => {
@@ -39,25 +51,24 @@ class CompanySearch extends React.Component {
         let vidName = document.getElementById("videoNameVideo1").value;
         let pdfName = document.getElementById("pdfName1").value;
 
-        console.log(course);
-        console.log(vidName);
-        console.log(pdfName);
+        if (course.value !== null && course.value !== "" &&
+            vidName.value !== null && vidName.value !== "" &&
+            this.state.selectedVideo !== null && this.state.selectedPdf !== null &&
+            pdfName.value !== null && pdfName.value !== "") {
+            formDataVideo.append(
+                'file',
+                this.state.selectedVideo
+            );
 
-        formDataVideo.append(
-            'file',
-            this.state.selectedVideo
-        );
+            formDataPdf.append(
+                'file',
+                this.state.selectedPdf
+            );
 
-        formDataPdf.append(
-            'file',
-            this.state.selectedPdf
-        );
-
-        console.log(this.state.selectedVideo);
-        console.log(this.state.selectedPdf);
-
-        VideoOperations.addVideo(course, formDataVideo, vidName);
-        VideoOperations.addPdf(course, formDataPdf, pdfName);
+            VideoOperations.addVideo(course, formDataVideo, vidName);
+            VideoOperations.addPdf(course, formDataPdf, pdfName);
+        } else
+            this.togglePop();
     };
 
     handleSearchChange = e => {
@@ -81,73 +92,90 @@ class CompanySearch extends React.Component {
     };
 
     addUser = () => {
-        let userCompanyName = document.getElementById("userCompanyName1").value;
-        let registeredCourses = document.getElementById("registeredCourses1").value;
-        let cellNumber = document.getElementById("cellNumberUser1").value;
-        UserOperations.addUser(userCompanyName, cellNumber, registeredCourses);
+        let userCompanyName = document.getElementById("userCompanyName");
+        let registeredCourses = document.getElementById("registeredCourses");
+        let cellNumber = document.getElementById("cellNumberUser");
+        if (userCompanyName.value !== null && userCompanyName.value !== "" && userCompanyName.value !== undefined &&
+            cellNumber.value !== null && cellNumber.value !== "" && cellNumber.value !== undefined && cellNumber.value.length < 10 &&
+            registeredCourses.value !== null && registeredCourses.value !== "" && registeredCourses.value !== undefined)
+            UserOperations.addUser(userCompanyName.value, cellNumber.value, registeredCourses.value);
+        else
+            this.togglePop()
     }
 
     updateUser = () => {
-        let userCompanyName = document.getElementById("userCompanyName1").value;
-        let cellNumber = document.getElementById("cellNumberUser1").value;
-        let additionalCourses = document.getElementById("additionalCourses1").value;
-        UserOperations.updateUser(userCompanyName, cellNumber, additionalCourses);
+        let userCompanyName = document.getElementById("userCompanyName");
+        let cellNumber = document.getElementById("cellNumberUser");
+        let additionalCourses = document.getElementById("additionalCourses");
+        if (userCompanyName.value !== null && userCompanyName.value !== "" && userCompanyName.value !== undefined &&
+            cellNumber.value !== null && cellNumber.value !== "" && cellNumber.value !== undefined && cellNumber.value.length < 10 &&
+            additionalCourses.value !== null && additionalCourses.value !== "" && additionalCourses.value !== undefined)
+            UserOperations.updateUser(userCompanyName.value, cellNumber.value, additionalCourses.value);
+        else
+            this.togglePop()
     }
 
     removeUser = () => {
-        let cellNumber = document.getElementById("cellNumberUser1").value;
-        UserOperations.removeUser(cellNumber);
+        let cellNumber = document.getElementById("cellNumberUser");
+        if (cellNumber.value !== null && cellNumber.value !== "" && cellNumber.value !== undefined && cellNumber.value.length < 10)
+            UserOperations.removeUser(cellNumber.value);
+        else
+            this.togglePop()
     }
 
     removeWatched = () => {
-        let cellNumber = document.getElementById("cellNumber1").value;
-        let videoNameWatched = document.getElementById("videoNameWatched1").value;
-        WatchedOperations.removeWatched(cellNumber, videoNameWatched);
+        let cellNumber = document.getElementById("cellNumber");
+        let videoNameWatched = document.getElementById("videoNameWatched");
+        if (cellNumber.value !== null && cellNumber.value !== "" && cellNumber.value !== undefined && cellNumber.value.length < 10 &&
+            videoNameWatched.value !== null && videoNameWatched.value !== "" && videoNameWatched.value !== undefined)
+            WatchedOperations.removeWatched(cellNumber.value, videoNameWatched.value);
+        else
+            this.togglePop()
     }
 
-    getWatchedReport = () => {
-        WatchedOperations.getWatchedReport(this.state.searchValue, content => {
-            this.setState({
-                pdfReport: content.slice(0, 25)
-            });
-        });
-    }
+    printDocument = () => {
+        let searchBar = document.getElementById("compSearch");
+        if (searchBar.value !== null && searchBar.value !== "") {
+            let content = document.getElementById("companyTable");
+            let doc = new jsPDF('p', 'pt', 'a4')
+            doc.autoTable({html: content})
+
+            doc.save(this.state.searchValue);
+        } else {
+            this.togglePop()
+        }
+    };
 
     render() {
         const {content} = this.state;
-        const headings = [
-            'Company name',
-            'Cell number',
-            'Course',
-            'Video Name',
-            'Watched',
-            'Date'
-        ];
 
         const contRows = content.map((cont, idx) => (
-            <tr key={idx}>
-                <Cell key={`${idx}-${1}`} content={cont.companyName} fixed={1 === 0} height={5}/>
-                <Cell key={`${idx}-${2}`} content={cont.cellNumber} fixed={2 === 0} height={5}/>
-                <Cell key={`${idx}-${3}`} content={cont.course} fixed={3 === 0} height={5}/>
-                <Cell key={`${idx}-${4}`} content={cont.videoName} fixed={4 === 0} height={5}/>
-                <Cell key={`${idx}-${5}`} content={cont.watched} fixed={5 === 0} height={5}/>
-                <Cell key={`${idx}-${6}`} content={cont.date} fixed={6 === 0} height={5}/>
-            </tr>
+            <TableRow key={idx}>
+                <TableCell align="left">{cont.companyName}</TableCell>
+                <TableCell align="left">{cont.cellNumber}</TableCell>
+                <TableCell align="left">{cont.course}</TableCell>
+                <TableCell align="left">{cont.videoName}</TableCell>
+                <TableCell align="left">{cont.watched}</TableCell>
+                <TableCell align="left">{cont.date}</TableCell>
+            </TableRow>
         ));
 
         const theadMarkup = (
-            <tr key="heading">
-                <Cell key={`${1}`} content={headings[0]} header={true} fixed={1 === 0} height={5}/>
-                <Cell key={`${2}`} content={headings[1]} header={true} fixed={2 === 0} height={5}/>
-                <Cell key={`${3}`} content={headings[2]} header={true} fixed={3 === 0} height={5}/>
-                <Cell key={`${4}`} content={headings[3]} header={true} fixed={4 === 0} height={5}/>
-                <Cell key={`${5}`} content={headings[4]} header={true} fixed={5 === 0} height={5}/>
-                <Cell key={`${6}`} content={headings[5]} header={true} fixed={6 === 0} height={5}/>
-            </tr>
+            <TableRow key="heading">
+                <TableCell align="left">Company name</TableCell>
+                <TableCell align="left">Cell number</TableCell>
+                <TableCell align="left">Course</TableCell>
+                <TableCell align="left">Video Name</TableCell>
+                <TableCell align="left">Watched</TableCell>
+                <TableCell align="left">Date</TableCell>
+            </TableRow>
         );
 
         return (
             <>
+                <div>
+                    {this.state.seen ? <PopUp toggle={this.togglePop}/> : null}
+                </div>
                 <UserOpsRow>
                     <UserOps>
                         <UserOperationsUI>User Operations</UserOperationsUI>
@@ -372,20 +400,46 @@ class CompanySearch extends React.Component {
                         >Add Video And PDF</Button>
                     </VidsOps>
                 </UserOpsRow>
-                <InputStyleStack>
-                    <input className="prompt" type="text" placeholder="Company Name"
-                           value={this.state.searchValue}
-                           onChange={this.handleSearchChange}
-                           style={{
-                               marginTop: -380, marginLeft: 130, font: 'Roboto', height: '48px', color: '#000',
-                               width: '257px', position: 'absolute', left: '0px', top: '0px', background: 'transparent',
-                               border: "1px", borderColor: "rgba(103, 128, 159, 0.5)", borderStyle: "solid"
-                           }}
-                    />
-                </InputStyleStack>
+                <SearchBarRow>
+                    <InputStyleStack>
+                        <input id="compSearch" className="prompt" type="text" placeholder="Company Name"
+                               value={this.state.searchValue}
+                               onChange={this.handleSearchChange}
+                               style={{
+                                   marginTop: -380,
+                                   marginLeft: 130,
+                                   font: 'Roboto',
+                                   height: '48px',
+                                   color: '#000',
+                                   width: '257px',
+                                   position: 'absolute',
+                                   left: '0px',
+                                   top: '0px',
+                                   background: 'transparent',
+                                   border: "1px",
+                                   borderColor: "rgba(103, 128, 159, 0.5)",
+                                   borderStyle: "solid"
+                               }}
+                        />
+                    </InputStyleStack>
+                    <Button
+                        variant="outlined"
+                        color="primary"
+                        style={{
+                            marginTop: -377,
+                            marginLeft: 160,
+                            height: 36,
+                            width: 200,
+                            fontSize: '11px'
+                        }}
+                        endIcon={<SaveAlt/>}
+                        size={"small"}
+                        onClick={this.printDocument}
+                    >Generate PDF Report</Button>
+                </SearchBarRow>
                 <div id="company-name" className="DataTable">
                     <div className="ScrollContainer">
-                        <table className="Table">
+                        <table id="companyTable" className="Table">
                             <thead>
                             {theadMarkup}
                             </thead>
@@ -501,6 +555,14 @@ const InputStyleStack = styled.div`
   margin-left: 21px;
   margin-top: 4px;
   position: relative;
+`;
+
+const SearchBarRow = styled.div`
+  height: 65px;
+  flex-direction: row;
+  display: flex;
+  margin-top: 4px;
+  margin-left: 130px;
 `;
 
 const MaterialButtonSuccess2Row = styled.div`
