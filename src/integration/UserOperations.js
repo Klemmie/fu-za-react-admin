@@ -1,5 +1,5 @@
 function addUser(companyName, cellNumber, registeredCourses) {
-    return fetch('user/newUser', {
+    return fetch('https://turtletech.ddns.me:100/user/newUser/' + companyName + '/' + cellNumber + '/' + registeredCourses, {
         method: 'POST',
         accept: "application/json"
     })
@@ -8,7 +8,7 @@ function addUser(companyName, cellNumber, registeredCourses) {
 }
 
 function updateUser(companyName, cellNumber, registeredCourses) {
-    return fetch('user/updatedUser/' + companyName + "/" + cellNumber + "/" + registeredCourses, {
+    return fetch('https://turtletech.ddns.me:100/user/updatedUser/' + companyName + "/" + cellNumber + "/" + registeredCourses, {
         method: 'PUT',
         accept: "application/json"
     })
@@ -17,7 +17,7 @@ function updateUser(companyName, cellNumber, registeredCourses) {
 }
 
 function removeUser(cellNumber) {
-    return fetch('user/removeUser/' + cellNumber, {
+    return fetch('https://turtletech.ddns.me:100/user/removeUser/' + cellNumber, {
         method: 'PUT',
         accept: "application/json"
     })

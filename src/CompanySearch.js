@@ -92,45 +92,45 @@ class CompanySearch extends React.Component {
     };
 
     addUser = () => {
-        let userCompanyName = document.getElementById("userCompanyName");
-        let registeredCourses = document.getElementById("registeredCourses");
-        let cellNumber = document.getElementById("cellNumberUser");
-        if (userCompanyName.value !== null && userCompanyName.value !== "" && userCompanyName.value !== undefined &&
-            cellNumber.value !== null && cellNumber.value !== "" && cellNumber.value !== undefined && cellNumber.value.length < 10 &&
-            registeredCourses.value !== null && registeredCourses.value !== "" && registeredCourses.value !== undefined)
+        let userCompanyName = document.getElementById("userCompanyName1");
+        let registeredCourses = document.getElementById("registeredCourses1");
+        let cellNumber = document.getElementById("cellNumberUser1");
+        // if (userCompanyName.value !== null && userCompanyName.value !== "" && userCompanyName.value !== undefined &&
+        //     cellNumber.value !== null && cellNumber.value !== "" && cellNumber.value !== undefined && cellNumber.value.length < 10 &&
+        //     registeredCourses.value !== null && registeredCourses.value !== "" && registeredCourses.value !== undefined)
             UserOperations.addUser(userCompanyName.value, cellNumber.value, registeredCourses.value);
-        else
-            this.togglePop()
+        // else
+        //     this.togglePop()
     }
 
     updateUser = () => {
-        let userCompanyName = document.getElementById("userCompanyName");
-        let cellNumber = document.getElementById("cellNumberUser");
-        let additionalCourses = document.getElementById("additionalCourses");
-        if (userCompanyName.value !== null && userCompanyName.value !== "" && userCompanyName.value !== undefined &&
-            cellNumber.value !== null && cellNumber.value !== "" && cellNumber.value !== undefined && cellNumber.value.length < 10 &&
-            additionalCourses.value !== null && additionalCourses.value !== "" && additionalCourses.value !== undefined)
+        let userCompanyName = document.getElementById("userCompanyName1");
+        let cellNumber = document.getElementById("cellNumberUser1");
+        let additionalCourses = document.getElementById("additionalCourses1");
+        // if (userCompanyName.value !== null && userCompanyName.value !== "" && userCompanyName.value !== undefined &&
+        //     cellNumber.value !== null && cellNumber.value !== "" && cellNumber.value !== undefined && cellNumber.value.length < 10 &&
+        //     additionalCourses.value !== null && additionalCourses.value !== "" && additionalCourses.value !== undefined)
             UserOperations.updateUser(userCompanyName.value, cellNumber.value, additionalCourses.value);
-        else
-            this.togglePop()
+        // else
+        //     this.togglePop()
     }
 
     removeUser = () => {
-        let cellNumber = document.getElementById("cellNumberUser");
-        if (cellNumber.value !== null && cellNumber.value !== "" && cellNumber.value !== undefined && cellNumber.value.length < 10)
+        let cellNumber = document.getElementById("cellNumberUser1");
+        // if (cellNumber.value !== null && cellNumber.value !== "" && cellNumber.value !== undefined && cellNumber.value.length < 10)
             UserOperations.removeUser(cellNumber.value);
-        else
-            this.togglePop()
+        // else
+        //     this.togglePop()
     }
 
     removeWatched = () => {
-        let cellNumber = document.getElementById("cellNumber");
-        let videoNameWatched = document.getElementById("videoNameWatched");
-        if (cellNumber.value !== null && cellNumber.value !== "" && cellNumber.value !== undefined && cellNumber.value.length < 10 &&
-            videoNameWatched.value !== null && videoNameWatched.value !== "" && videoNameWatched.value !== undefined)
+        let cellNumber = document.getElementById("cellNumber1");
+        let videoNameWatched = document.getElementById("videoNameWatched1");
+        // if (cellNumber.value !== null && cellNumber.value !== "" && cellNumber.value !== undefined && cellNumber.value.length < 10 &&
+        //     videoNameWatched.value !== null && videoNameWatched.value !== "" && videoNameWatched.value !== undefined)
             WatchedOperations.removeWatched(cellNumber.value, videoNameWatched.value);
-        else
-            this.togglePop()
+        // else
+        //     this.togglePop()
     }
 
     printDocument = () => {

@@ -1,5 +1,5 @@
 function addVideo(course, file, videoName) {
-    return fetch('upload/fileUpload/' + course + "/" + videoName, {
+    return fetch('https://turtletech.ddns.me:100/upload/fileUpload/' + course + "/" + videoName, {
         method: 'POST',
         accept: "multipart/form-data",
         body: file
@@ -8,7 +8,7 @@ function addVideo(course, file, videoName) {
 }
 
 function addPdf(course, file, pdfName) {
-    return fetch('upload/fileUpload/' + course + "/" + pdfName, {
+    return fetch('https://turtletech.ddns.me:100/upload/fileUpload/' + course + "/" + pdfName, {
         method: 'POST',
         accept: "multipart/form-data",
         body: file

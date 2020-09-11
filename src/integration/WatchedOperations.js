@@ -1,5 +1,5 @@
 function removeWatched(videoName, cellNumber) {
-    return fetch('watched/removeWatched/' + cellNumber + '/' + videoName, {
+    return fetch('https://turtletech.ddns.me:100/watched/removeWatched/' + cellNumber + '/' + videoName, {
         method: 'POST',
         accept: "application/json"
     })
@@ -8,7 +8,7 @@ function removeWatched(videoName, cellNumber) {
 }
 
 function getWatchedReport(companyName, cb) {
-    return fetch('admin/pdfReport/' + companyName, {
+    return fetch('https://turtletech.ddns.me:100/admin/pdfReport/' + companyName, {
         accept: "application/json"
     })
         .then(checkStatus)

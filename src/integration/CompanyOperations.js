@@ -1,5 +1,5 @@
 function allCompanies(cb) {
-    return fetch('admin/companyNames', {
+    return fetch('https://turtletech.ddns.me:100/admin/companyNames', {
         accept: "application/json"
     })
         .then(checkStatus)
@@ -8,7 +8,7 @@ function allCompanies(cb) {
 }
 
 function learnersByCompanyName(companyName, cb) {
-    return fetch('admin/adminScreenView/' + companyName, {
+    return fetch('https://turtletech.ddns.me:100/admin/adminScreenView/' + companyName, {
         accept: "application/json"
     })
         .then(checkStatus)
