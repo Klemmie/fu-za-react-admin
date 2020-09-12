@@ -10,12 +10,14 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import Send from '@material-ui/icons/Send';
 import SaveAlt from '@material-ui/icons/SaveAlt'
 import WatchedOperations from "./integration/WatchedOperations";
-import VideoOperations from "./integration/VideoOperations";
 import TableRow from "@material-ui/core/TableRow";
 import jsPDF from 'jspdf';
 import TableCell from "@material-ui/core/TableCell";
 import "jspdf-autotable"
-import PopUp from "./PopUp";
+import PopUpValidation from "./PopUpValidation";
+import PopUpSuccess from "./PopUpSuccess";
+import UploadProgress from "./UploadProgress";
+import VideoOperations from "./integration/VideoOperations";
 
 class CompanySearch extends React.Component {
     state = {
@@ -25,12 +27,37 @@ class CompanySearch extends React.Component {
         selectedVideo: null,
         selectedPdf: null,
         pdfReport: [],
-        seen: false
+        seen: false,
+        seenSuccess: false,
+        progress: false
     };
 
-    togglePop = () => {
+    togglePopOn = () => {
         this.setState({
-            seen: !this.state.seen
+            seen: true
+        });
+    };
+
+    togglePopOff = () => {
+        this.setState({
+            seen: false
+        });
+    };
+
+    togglePopSuccessOn = () => {
+        this.setState({
+            seenSuccess: true
+        });
+        setTimeout(() =>
+            this.setState({
+                seenSuccess: false,
+                progress: false
+            }), 5000);
+    };
+
+    togglePopSuccessOff = () => {
+        this.setState({
+            seenSuccess: false
         });
     };
 
@@ -44,6 +71,9 @@ class CompanySearch extends React.Component {
 
 
     onFileUpload = () => {
+        this.setState({
+            progress: true
+        })
         const formDataVideo = new FormData();
         const formDataPdf = new FormData();
 
@@ -55,6 +85,7 @@ class CompanySearch extends React.Component {
             vidName.value !== null && vidName.value !== "" &&
             this.state.selectedVideo !== null && this.state.selectedPdf !== null &&
             pdfName.value !== null && pdfName.value !== "") {
+            this.togglePopOff()
             formDataVideo.append(
                 'file',
                 this.state.selectedVideo
@@ -65,10 +96,15 @@ class CompanySearch extends React.Component {
                 this.state.selectedPdf
             );
 
-            VideoOperations.addVideo(course, formDataVideo, vidName);
-            VideoOperations.addPdf(course, formDataPdf, pdfName);
+            VideoOperations.addVideo(course, formDataVideo, vidName).then(value => {
+                if (value.name === pdfName) {
+                    this.togglePopSuccessOn();
+                }
+            });
+            VideoOperations.addPdf(course, formDataPdf, pdfName)
+
         } else
-            this.togglePop();
+            this.togglePopOn();
     };
 
     handleSearchChange = e => {
@@ -95,54 +131,81 @@ class CompanySearch extends React.Component {
         let userCompanyName = document.getElementById("userCompanyName1");
         let registeredCourses = document.getElementById("registeredCourses1");
         let cellNumber = document.getElementById("cellNumberUser1");
-        // if (userCompanyName.value !== null && userCompanyName.value !== "" && userCompanyName.value !== undefined &&
-        //     cellNumber.value !== null && cellNumber.value !== "" && cellNumber.value !== undefined && cellNumber.value.length < 10 &&
-        //     registeredCourses.value !== null && registeredCourses.value !== "" && registeredCourses.value !== undefined)
-            UserOperations.addUser(userCompanyName.value, cellNumber.value, registeredCourses.value);
-        // else
-        //     this.togglePop()
+        console.log(userCompanyName);
+        console.log(registeredCourses);
+        console.log(cellNumber);
+        if (userCompanyName.value !== null && userCompanyName.value !== "" && userCompanyName.value !== undefined &&
+            cellNumber.value !== null && cellNumber.value !== "" && cellNumber.value !== undefined && !cellNumber.value.length < 10 &&
+            registeredCourses.value !== null && registeredCourses.value !== "" && registeredCourses.value !== undefined) {
+            this.togglePopOff();
+            UserOperations.addUser(userCompanyName.value, cellNumber.value, registeredCourses.value)
+                .then(value => {
+                    let responseCellNumber = "27" + cellNumber.value;
+                    if (value.cellNumber === responseCellNumber)
+                        this.togglePopSuccessOn();
+                });
+        } else
+            this.togglePopOn()
     }
 
     updateUser = () => {
         let userCompanyName = document.getElementById("userCompanyName1");
         let cellNumber = document.getElementById("cellNumberUser1");
         let additionalCourses = document.getElementById("additionalCourses1");
-        // if (userCompanyName.value !== null && userCompanyName.value !== "" && userCompanyName.value !== undefined &&
-        //     cellNumber.value !== null && cellNumber.value !== "" && cellNumber.value !== undefined && cellNumber.value.length < 10 &&
-        //     additionalCourses.value !== null && additionalCourses.value !== "" && additionalCourses.value !== undefined)
-            UserOperations.updateUser(userCompanyName.value, cellNumber.value, additionalCourses.value);
-        // else
-        //     this.togglePop()
+        if (userCompanyName.value !== null && userCompanyName.value !== "" && userCompanyName.value !== undefined &&
+            cellNumber.value !== null && cellNumber.value !== "" && cellNumber.value !== undefined && cellNumber.value.length < 10 &&
+            additionalCourses.value !== null && additionalCourses.value !== "" && additionalCourses.value !== undefined) {
+            this.togglePopOff();
+            UserOperations.updateUser(userCompanyName.value, cellNumber.value, additionalCourses.value)
+                .then(value => {
+                    let responseCellNumber = "27" + cellNumber.value;
+                    if (value.cellNumber === responseCellNumber)
+                        this.togglePopSuccessOn();
+                });
+        } else
+            this.togglePopOn()
     }
 
     removeUser = () => {
         let cellNumber = document.getElementById("cellNumberUser1");
-        // if (cellNumber.value !== null && cellNumber.value !== "" && cellNumber.value !== undefined && cellNumber.value.length < 10)
-            UserOperations.removeUser(cellNumber.value);
-        // else
-        //     this.togglePop()
+        if (cellNumber.value !== null && cellNumber.value !== "" && cellNumber.value !== undefined && cellNumber.value.length < 10) {
+            this.togglePopOff();
+            UserOperations.removeUser(cellNumber.value).then(value => {
+                let responseCellNumber = "27" + cellNumber.value;
+                if (value.cellNumber === responseCellNumber)
+                    this.togglePopSuccessOn();
+            });
+        } else
+            this.togglePopOn()
     }
 
     removeWatched = () => {
         let cellNumber = document.getElementById("cellNumber1");
         let videoNameWatched = document.getElementById("videoNameWatched1");
-        // if (cellNumber.value !== null && cellNumber.value !== "" && cellNumber.value !== undefined && cellNumber.value.length < 10 &&
-        //     videoNameWatched.value !== null && videoNameWatched.value !== "" && videoNameWatched.value !== undefined)
-            WatchedOperations.removeWatched(cellNumber.value, videoNameWatched.value);
-        // else
-        //     this.togglePop()
+        if (cellNumber.value !== null && cellNumber.value !== "" && cellNumber.value !== undefined && cellNumber.value.length < 10 &&
+            videoNameWatched.value !== null && videoNameWatched.value !== "" && videoNameWatched.value !== undefined) {
+            this.togglePopOff();
+            WatchedOperations.removeWatched(cellNumber.value, videoNameWatched.value).then(value => {
+                let responseCellNumber = "27" + cellNumber.value;
+                if (value.cellNumber === responseCellNumber)
+                    this.togglePopSuccessOn();
+            });
+        } else
+            this.togglePopOn()
     }
 
     printDocument = () => {
         let searchBar = document.getElementById("compSearch");
         if (searchBar.value !== null && searchBar.value !== "") {
+            this.togglePopOff();
             let content = document.getElementById("companyTable");
             let doc = new jsPDF('p', 'pt', 'a4')
             doc.autoTable({html: content})
 
             doc.save(this.state.searchValue);
+            this.togglePopSuccessOn();
         } else {
-            this.togglePop()
+            this.togglePopOn()
         }
     };
 
@@ -174,7 +237,13 @@ class CompanySearch extends React.Component {
         return (
             <>
                 <div>
-                    {this.state.seen ? <PopUp toggle={this.togglePop}/> : null}
+                    {this.state.seen ? <PopUpValidation toggle={this.togglePopOff}/> : null}
+                </div>
+                <div>
+                    {this.state.seenSuccess ? <PopUpSuccess toggle={this.togglePopSuccessOff}/> : null}
+                </div>
+                <div>
+                    {this.state.progress ? <UploadProgress/> : null}
                 </div>
                 <UserOpsRow>
                     <UserOps>

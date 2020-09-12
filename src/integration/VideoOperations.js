@@ -5,6 +5,7 @@ function addVideo(course, file, videoName) {
         body: file
     })
         .then(checkStatus)
+        .then(response => response.json())
 }
 
 function addPdf(course, file, pdfName) {
@@ -14,6 +15,7 @@ function addPdf(course, file, pdfName) {
         body: file
     })
         .then(checkStatus)
+        .then(response => response.json())
 }
 
 function checkStatus(response) {

@@ -2,7 +2,7 @@ import React, {Component} from "react";
 import Close from "@material-ui/icons/Close";
 import {Button} from "@material-ui/core";
 
-export default class PopUp extends Component {
+export default class PopUpValidation extends Component {
     handleClick = () => {
         this.props.toggle();
     };
@@ -13,7 +13,7 @@ export default class PopUp extends Component {
                 <div className="modal_content">
                     <Button
                         variant="outlined"
-                        color="secondary"
+                        color="primary"
                         style={{
                             height: 50,
                             width: 500,
@@ -23,7 +23,7 @@ export default class PopUp extends Component {
                         }}
                         endIcon={<Close/>}
                         onClick={this.handleClick}
-                    >Ensure all relevant fields are populated</Button>
+                    >Operation completed successfully</Button>
                 </div>
             </div>
         );
