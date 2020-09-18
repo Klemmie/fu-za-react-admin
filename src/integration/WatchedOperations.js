@@ -1,4 +1,4 @@
-function removeWatched(videoName, cellNumber) {
+function removeWatched(cellNumber, videoName) {
     return fetch('https://turtletech.ddns.me:100/watched/removeWatched/' + cellNumber + '/' + videoName, {
         method: 'POST',
         accept: "application/json"
